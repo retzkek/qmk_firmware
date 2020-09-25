@@ -20,6 +20,8 @@
 
 #ifdef KEYBOARD_atreus_astar
     #include "astar.h"
+#elif KEYBOARD_atreus_astar_oled
+    #include "astar_oled.h"
 #elif KEYBOARD_atreus_astar_mirrored
     #include "astar_mirrored.h"
 #elif KEYBOARD_atreus_teensy2
