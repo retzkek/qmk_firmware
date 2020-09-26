@@ -46,4 +46,8 @@
 #define OLED_IC OLED_IC_SSD1306
 #define OLED_DISPLAY_128X64
 #define OLED_DISPLAY_ADDRESS 0x3D
-#define OLED_TIMEOUT 10000 /* display auto-off in ms. 0 to disable */
+#define OLED_TIMEOUT 3000 /* display auto-off in ms. 0 to disable */
+
+#define OLED_FONT_H "atreusfont.h"
+#define OLED_FONT_START 0x20
+#define OLED_FONT_END 0xFF
