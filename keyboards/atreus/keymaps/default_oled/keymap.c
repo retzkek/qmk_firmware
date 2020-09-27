@@ -2,6 +2,7 @@
 // This is the canonical layout file for the Quantum project. If you want to add another keyboard,
 
 #include QMK_KEYBOARD_H
+#include "version.h"
 #include "charcode.h"
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
@@ -11,6 +12,10 @@
 #define _QW 0
 #define _RS 1
 #define _LW 2
+
+enum my_keycodes {
+  INFO = SAFE_RANGE
+};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QW] = LAYOUT( /* Qwerty */
@@ -41,7 +46,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_INS,  KC_HOME, KC_UP,   KC_END,  KC_PGUP,                   KC_UP,   KC_F7,   KC_F8,   KC_F9,   KC_F10  ,
     KC_DEL,  KC_LEFT, KC_DOWN, KC_RGHT, KC_PGDN,                   KC_DOWN, KC_F4,   KC_F5,   KC_F6,   KC_F11  ,
     KC_NO,   KC_VOLU, KC_NO,   KC_NO,   RESET,                     KC_NO,   KC_F1,   KC_F2,   KC_F3,   KC_F12  ,
-    KC_NO,   KC_VOLD, KC_LGUI, KC_LSFT, KC_BSPC, KC_LCTL, KC_LALT, KC_SPC,  TO(_QW), KC_PSCR, KC_SLCK, KC_PAUS )
+    INFO,    KC_VOLD, KC_LGUI, KC_LSFT, KC_BSPC, KC_LCTL, KC_LALT, KC_SPC,  TO(_QW), KC_PSCR, KC_SLCK, KC_PAUS )
 };
 
 const char PROGMEM charmaps[][LAYOUT_COLS] = {
@@ -59,13 +64,33 @@ const char PROGMEM charmaps[][LAYOUT_COLS] = {
     ACH_INS,   ACH_HOME,  ACH_UP,    ACH_END,   ACH_PGUP,     ACH_UP,    ACH_F7,    ACH_F8,    ACH_F9,    ACH_F10  ,
     ACH_DEL,   ACH_LEFT,  ACH_DOWN,  ACH_RGHT,  ACH_PGDN,     ACH_DOWN,  ACH_F4,    ACH_F5,    ACH_F6,    ACH_F11  ,
     ACH_NO,    ACH_VOLU,  ACH_NO,    ACH_NO,    ACH_RESET,    ACH_NO,    ACH_F1,    ACH_F2,    ACH_F3,    ACH_F12  ,
-    ACH_NO,    ACH_VOLD,  ACH_LGUI,  ACH_LSFT,  ACH_BSPC,     ACH_SPC,   ACH_LOWER, ACH_PSCR,  ACH_SLCK,  ACH_PAUS )
+    ACH_INFO,  ACH_VOLD,  ACH_LGUI,  ACH_LSFT,  ACH_BSPC,     ACH_SPC,   ACH_LOWER, ACH_PSCR,  ACH_SLCK,  ACH_PAUS )
 };
 
 
 #ifdef OLED_DRIVER_ENABLE
 
+static uint16_t info_timer;
+#define INFO_TIMEOUT 3000 /*  how long to display info scren in ms */
+
+
+static void render_info(void) {
+    static const char PROGMEM atreus_logo[] = ACH_LOGO;
+    oled_write_P(atreus_logo, false);
+    oled_write_P(PSTR("\n"), false);
+    oled_write_P(PSTR("QMK " QMK_VERSION "\n"), false);
+    oled_write_P(PSTR(QMK_BUILDDATE "\n"), false);
+    oled_write_P(PSTR(QMK_KEYBOARD "\n"), false);
+    oled_write_ln_P(PSTR(QMK_KEYMAP), false);
+}
+
 void oled_task_user(void) {
+    if (timer_elapsed(info_timer) < INFO_TIMEOUT) {
+      render_info();
+      return;
+    }
+    // keep timer_elapased() from overrunning
+    info_timer = timer_read()-INFO_TIMEOUT;
     // Host Keyboard Layer Status
     switch (get_highest_layer(layer_state)) {
         case _QW:
@@ -93,4 +118,20 @@ void oled_task_user(void) {
     oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
     */
 }
+
+void keyboard_post_init_user(void) {
+  // display info screen on startup
+  info_timer = timer_read();
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case INFO:
+      info_timer = timer_read();
+      return false; // Skip all further processing of this key
+    default:
+      return true; // Process all other keycodes normally
+  }
+}
+
 #endif
