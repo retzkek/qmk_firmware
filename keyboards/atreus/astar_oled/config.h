@@ -49,5 +49,5 @@
 #define OLED_TIMEOUT 3000 /* display auto-off in ms. 0 to disable */
 
 #define OLED_FONT_H "atreusfont.h"
-#define OLED_FONT_START 0x20
-#define OLED_FONT_END 0xFF
+#define OLED_FONT_START 0x00
+#define OLED_FONT_END 0xDF
