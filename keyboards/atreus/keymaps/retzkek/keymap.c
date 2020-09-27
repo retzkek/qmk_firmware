@@ -120,6 +120,9 @@ void oled_task_user(void) {
 }
 
 void keyboard_post_init_user(void) {
+  // wait for OLED to start
+  wait_ms(1000);
+  oled_init(OLED_ROTATION_0);
   // display info screen on startup
   info_timer = timer_read();
 }
