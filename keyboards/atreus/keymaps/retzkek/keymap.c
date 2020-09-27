@@ -77,10 +77,10 @@ static uint16_t info_timer;
 static void render_info(void) {
     static const char PROGMEM atreus_logo[] = ACH_LOGO;
     oled_write_P(atreus_logo, false);
-    oled_write_P(PSTR("\n"), false);
-    oled_write_P(PSTR("QMK " QMK_VERSION "\n"), false);
-    oled_write_P(PSTR(QMK_BUILDDATE "\n"), false);
-    oled_write_P(PSTR(QMK_KEYBOARD "\n"), false);
+    oled_write_P(PSTR("_____________________"), false);
+    oled_write_ln_P(PSTR(QMK_VERSION), false);
+    oled_write_ln_P(PSTR(QMK_BUILDDATE), false);
+    oled_write_ln_P(PSTR(QMK_KEYBOARD), false);
     oled_write_ln_P(PSTR(QMK_KEYMAP), false);
 }
 
