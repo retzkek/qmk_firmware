@@ -12,3 +12,4 @@ MCU = atmega32u4
 BOOTLOADER = caterina
 
 OLED_DRIVER_ENABLE = yes
+MOUSEKEY_ENABLE = no       # we need some more space
